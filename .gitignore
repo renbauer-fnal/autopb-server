@@ -1,2 +1,4 @@
 /static/jquery-ui/
 /static/jquery-ui*
+*.swp
+__pycache__/
