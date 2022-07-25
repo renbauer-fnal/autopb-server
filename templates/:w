@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Log Lines {% endblock %}</h1>
+    <style>
+       label {
+           cursor:pointer
+       }
+    </style>
+    <form method="post" action="publish">
+    <table>
+    {% for logline in loglines %}
+      <tr>
+        <td><!-- width="80%"> -->
+        <div class='message' style="padding-right:50px">
+            <label for="linetype:include:{{loop.index}}">
+            <div style="width:100%">
+            <input type=hidden id="command:{{loop.index}}" name="command:{{loop.index}}" value="{{ logline['command'] }}">
+            <input type=hidden id="response:{{loop.index}}" name="response:{{loop.index}}" value="{{ logline['response'] }}">
+            {% for commandline in logline['command'] %}
+                <b>({{commandline['time']}}) {{ commandline['prompt'] }}{{ commandline['arrow'] }}</b>{{ commandline['input'] }}<br/>
+            {% endfor %}
+            <p>
+            {% for responseline in logline['response'] %}
+                {{ responseline }}<br/>
+            {% endfor %}
+            </p>
+            </div>
+            </label>
+            <div class='message' style='width:fill;align:right'>
+                <span style='align:right'>
+                    <label style='padding:8px' for="linetype:mutating:{{loop.index}}">
+                    Diagnostic
+                    <label class="switch">
+                        <input type="checkbox" id="linetype:mutating:{{loop.index}}" name="linetype:{{loop.index}}" value="mutating">
+                        <span class="slider round"></span>
+                    </label>
+                    Mutating <br/>
+                    </label>
+                    <input type="textbox" name="comment:{{loop.index}}" style="width:100%">
+                </span>
+            </div>
+        </div>
+        </label>
+        </td> 
+        <td style="vertical-align:top">
+        <div class='message'>
+            <span> <!-- style="float:right;display:inline-block"> -->
+                <label class="switch">
+                    <input type="checkbox" id="linetype:include:{{loop.index}}" name="linetype:{{loop.index}}" value="include">
+                    <span class="slider round"></span>
+                </label>
+            </span>
+            <!--
+                <span>
+                    <input type="radio" id="linetype:noop:{{loop.index}}" name="linetype:{{loop.index}}" value="noop">
+                    <label for="linetype:noop:{{loop.index}}">Unimportant</label>
+                </span>
+                <span>
+                    <input type="radio" id="linetype:diagnostic:{{loop.index}}" name="linetype:{{loop.index}}" value="diagnostic">
+                    <label for="linetype:diagnostic:{{loop.index}}">Diagnostic</label>
+                </span>
+                <span>
+                    <input type="radio" id="linetype:mutating:{{loop.index}}" name="linetype:{{loop.index}}" value="mutating">
+                    <label for="linetype:mutating:{{loop.index}}">Mutating</label>
+                </span>
+                <br/>
+                <input type="textbox" name="comment:{{loop.index}}"style="width:100%">
+            -->
+        </td>
+        </div>
+      </tr>
+    {% endfor %}
+    </table>
+    <button type=submit>Publish</button>
+    </form>
+{% endblock %}

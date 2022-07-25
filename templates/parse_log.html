@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Log Lines {% endblock %}</h1>
+    <script>
+       function toggle_include(index) {
+           if ($( "#include_" + index).prop('checked')) {
+               $( "#logline_" + index ).animate({'max-height': $( "#logline_" + index ).prop('scrollHeight')});
+               $( "#logline_" + index ).removeClass("unselected");
+           } else {
+               $( "#logline_" + index ).animate({'max-height': '50px'});
+               $( "#logline_" + index ).addClass("unselected");
+           }
+       };
+    </script>
+    <style>
+       label {
+           cursor:pointer;
+       }
+       div.logline {
+           overflow:hidden;
+           display:inline-block;
+           width:70%;
+       }
+       div.unselected:hover {
+           color:black;
+       }
+       .unselected {
+           color:grey;
+       }
+       span.logfile_index_1 {
+           padding-left:50px;
+       }
+       span.logfile_index_2 {
+           padding-left:100px;
+       }
+       span.logfile_index_3 {
+           padding-left:150px;
+       }
+       form {
+           width:90%;
+       }
+    </style>
+    <form method="post" action="publish">
+    {% for logline in loglines %}
+      <span style='display:inline-block;width:100%'>
+        <span class='logfile_index_{{logline['logfile_index']}}' style="width:100%">
+          <div id='logline_{{loop.index}}' class='logline unselected' style="max-height:50px">
+            <div class='message' style="padding-right:50px">
+              <label for="include_{{loop.index}}">
+                <div>
+                  <input type=hidden id="command_{{loop.index}}" name="command_{{loop.index}}" value="{{ logline['command'] }}">
+                  <input type=hidden id="response_{{loop.index}}" name="response_{{loop.index}}" value="{{ logline['response'] }}">
+                  {% for commandline in logline['command'] %}
+                    <b>({{commandline['time']}}) {{ commandline['prompt'] }}{{ commandline['arrow'] }}</b>{{ commandline['input'] }}<br/>
+                  {% endfor %}
+                  <p>
+                  {% for responseline in logline['response'] %}
+                    {{ responseline }}<br/>
+                  {% endfor %}
+                  </p>
+                </div>
+              </label>
+              <div class='message' id='details_{{loop.index}}' style='width:100%;float:none'> <!-- ;display:none'> -->
+                <span style='float:right;padding:8px'>
+                  <label style='padding:8px' for="mutating_{{loop.index}}">
+                    Diagnostic
+                    <label class="switch">
+                      <input type="checkbox" id="mutating_{{loop.index}}" name="mutating_{{loop.index}}" class="mutating">
+                      <span class="slider round"></span>
+                    </label>
+                    Mutating <br/>
+                  </label>
+                </span>
+                <input type="textbox" name="comment_{{loop.index}}" style="width:100%">
+              </div>
+            </div>
+          </div>
+        </span> 
+        <span style="vertical-align:top">
+          <div class='message' style='display:inline-block'>
+            <span> <!-- style="float:right;display:inline-block"> -->
+              <label class="switch">
+                <input type="checkbox" id="include_{{loop.index}}" name="include_{{loop.index}}" class="include" onClick="toggle_include({{loop.index}})">
+                <span class="slider round"></span>
+              </label>
+            </span>
+          </div>
+        </span>
+      </span>
+    {% endfor %}
+    <button class="ui-button ui-widget ui-corner-all" style='margin:30px;margin-right:12%;float:right' type=submit>Publish</button>
+    </form>
+{% endblock %}
